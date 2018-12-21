@@ -49,6 +49,44 @@ namespace BingWallpaperTest
             return ImageUrl;
         }
 
+        //获取壁纸的简介
+        public static string getTitle()
+        {
+            string InfoUrl = "http://cn.bing.com/HPImageArchive.aspx?idx=0&n=1";
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(InfoUrl);
+            request.Method = "GET"; request.ContentType = "text/html;charset=UTF-8";
+            string xmlDoc;
+            //使用using自动注销HttpWebResponse
+            using (HttpWebResponse webResponse = (HttpWebResponse)request.GetResponse())
+            {
+                Stream stream = webResponse.GetResponseStream();
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    xmlDoc = reader.ReadToEnd();
+                }
+            }
+            // 使用正则表达式解析标签（字符串），当然你也可以使用XmlDocument类或XDocument类
+            Regex regex_Title = new Regex("<copyright>(?<MyTitle>.*?)</copyright>", RegexOptions.IgnoreCase);
+            MatchCollection collection1 = regex_Title.Matches(xmlDoc);
+            // 取得匹配项列表
+            string Title = collection1[0].Groups["MyTitle"].Value;
+            return Title;
+        }
+
+        //绘制文字介绍
+        public static Bitmap DrawTitle(Bitmap bitmap)
+        {
+            Graphics graphics = Graphics.FromImage(bitmap);
+            Font font = new System.Drawing.Font("微软雅黑", 12f);
+            string title = getTitle();
+            SizeF font_size = graphics.MeasureString(title, font);
+
+            graphics.DrawString(title, font, Brushes.White, new PointF(font_size.Width, font_size.Height));
+
+            graphics.Dispose();
+            return bitmap;
+        }
+
         public static void setWallpaper()
         {
             string ImageSavePath = @"D:\Program Files\BingWallpaper";
@@ -61,6 +99,8 @@ namespace BingWallpaperTest
             using (Stream stream = webres.GetResponseStream())
             {
                 bmpWallpaper = (Bitmap)Image.FromStream(stream);
+                //绘制文字介绍
+                DrawTitle(bmpWallpaper);
                 //stream.Close();
                 if (!Directory.Exists(ImageSavePath))
                 {
