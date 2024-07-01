@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -44,7 +44,7 @@ namespace BingWallpaperTest
             string ImageUrl = "http://www.bing.com" + collection[0].Groups["MyUrl"].Value;
             if (true)
             {
-                ImageUrl = ImageUrl.Replace("1366x768", "1920x1080");
+                ImageUrl = ImageUrl.Replace("1920x1080", "UHD");
             }
             return ImageUrl;
         }
@@ -77,7 +77,7 @@ namespace BingWallpaperTest
         public static Bitmap DrawTitle(Bitmap bitmap)
         {
             Graphics graphics = Graphics.FromImage(bitmap);
-            Font font = new System.Drawing.Font("微软雅黑", 12f);
+            Font font = new System.Drawing.Font("微软雅黑", 24f);
             string title = getTitle();
             SizeF font_size = graphics.MeasureString(title, font);
 
